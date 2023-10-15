@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	black   = Color("\033[1;30m%s\033[0m")
-	red     = Color("\033[1;31m%s\033[0m")
-	green   = Color("\033[1;32m%s\033[0m")
-	yellow  = Color("\033[1;33m%s\033[0m")
-	purple  = Color("\033[1;34m%s\033[0m")
-	magenta = Color("\033[1;35m%s\033[0m")
-	teal    = Color("\033[1;36m%s\033[0m")
-	white   = Color("\033[1;37m%s\033[0m")
+	//black   = Color("\033[1;30m%s\033[0m")
+	//white   = Color("\033[1;37m%s\033[0m")
+	//purple  = Color("\033[1;34m%s\033[0m")
+	//magenta = Color("\033[1;35m%s\033[0m")
+	red    = Color("\033[1;31m%s\033[0m")
+	green  = Color("\033[1;32m%s\033[0m")
+	yellow = Color("\033[1;33m%s\033[0m")
+	teal   = Color("\033[1;36m%s\033[0m")
 )
 
 var OS = runtime.GOOS
@@ -38,11 +38,11 @@ func main() {
 		case "2":
 			OSType()
 		case "3":
-			os.Exit(0)
-		case "4":
 			logicDisks()
-		case "5":
+		case "4":
 			fileMenu()
+		case "5":
+			os.Exit(0)
 		default:
 			fmt.Println(red("Invalid choice."))
 			continue
@@ -54,17 +54,18 @@ func main() {
 func showMenu() {
 	fmt.Println(yellow("1) Show menu options"))
 	fmt.Println(yellow("2) Show OS type"))
-	fmt.Println(yellow("3) Exit"))
-	fmt.Println(yellow("4) Show disk info"))
-	fmt.Println(yellow("5) Show file menu"))
+	fmt.Println(yellow("3) Show disk info"))
+	fmt.Println(yellow("4) Show file menu"))
+	fmt.Println(yellow("5) Exit"))
 }
 
 func showFileMenu() {
 	fmt.Println(yellow("1) Show menu options"))
 	fmt.Println(yellow("2) Create file"))
-	fmt.Println(yellow("3) Read file"))
-	fmt.Println(yellow("4) Delete file"))
-	fmt.Println(yellow("5) Get back"))
+	fmt.Println(yellow("3) Write in file"))
+	fmt.Println(yellow("4) Read file"))
+	fmt.Println(yellow("5) Delete file"))
+	fmt.Println(yellow("6) Get back"))
 }
 
 func fileMenu() {
@@ -81,10 +82,12 @@ func fileMenu() {
 		case "2":
 			createFile()
 		case "3":
-			readFile()
+			writeFile()
 		case "4":
-			deleteFile()
+			readFile()
 		case "5":
+			deleteFile()
+		case "6":
 			showMenu()
 			return
 		default:
@@ -102,22 +105,81 @@ func createFile() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
+	_, err := os.Stat(input)
+
+	if err == nil {
+		fmt.Println(teal("File " + input + " already exist, rewrite? (print y)"))
+		answer, _ := reader.ReadString('\n')
+		answer = answer[0:len(answer)-2] + ""
+		if answer != "y" {
+			return
+		}
+	}
+
 	file, err := os.Create(input)
 
 	if err != nil {
-		log.Panic(err)
+		fmt.Print(err)
+		return
 	}
 
 	defer file.Close()
-	fmt.Println("File created")
+	fmt.Println(green("File created"))
+}
+
+func writeFile() {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Choose file name: ")
+	input, _ := reader.ReadString('\n')
+	input = input[0:len(input)-2] + ""
+
+	file, err := os.Create(input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	fmt.Print(yellow("File was opened\nWrite text to input: "))
+	input, _ = reader.ReadString('\n')
+
+	_, err = file.WriteString(input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(green("Writing complete"))
 }
 
 func readFile() {
-	fmt.Println("File read")
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Choose file name: ")
+	input, _ := reader.ReadString('\n')
+	input = input[0:len(input)-2] + ""
+
+	file, err := os.ReadFile(input)
+	if err != nil {
+		fmt.Print(red(err))
+		return
+	}
+
+	fmt.Println("File content:\n" + string(file))
 }
 
 func deleteFile() {
-	fmt.Println("File deleted")
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Choose file name: ")
+	input, _ := reader.ReadString('\n')
+	input = input[0:len(input)-2] + ""
+
+	if err := os.Remove(input); err != nil {
+		fmt.Print(red(err))
+		return
+	}
+
+	fmt.Println(green("File deleted"))
 }
 
 func OSType() {
@@ -144,9 +206,9 @@ func testExec() {
 	cmd := exec.Command("systeminfo")
 	stdout, err := cmd.Output()
 	if err != nil {
-		log.Panic(err)
+		fmt.Print(err)
 	}
-	fmt.Println(magenta(string(stdout)))
+	fmt.Println(string(stdout))
 }
 
 func Color(colorString string) func(...interface{}) string {

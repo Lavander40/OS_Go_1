@@ -2,10 +2,26 @@ package main
 
 import (
 	"bufio"
+	"encoding/xml"
 	"fmt"
 	"log"
 	"os"
 )
+
+type Person struct {
+	XMLName   xml.Name `xml:"person"`
+	FirstName string   `xml:"name>first"`
+	LastName  string   `xml:"name>last"`
+	Age       int      `xml:"age"`
+}
+
+func NewPerson(firstName, lastName string) Person {
+	return Person{
+		FirstName: firstName,
+		LastName:  lastName,
+		Age:       23,
+	}
+}
 
 func showXmlMenu() {
 	fmt.Println(Yellow("1) Show menu options"))
@@ -53,10 +69,10 @@ func createXml() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	_, err := os.Stat(input)
+	_, err := os.Stat("data/" + input + ".xml")
 
 	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, rewrite? (print y)"))
+		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
 		answer, _ := reader.ReadString('\n')
 		answer = answer[0:len(answer)-2] + ""
 		if answer != "y" {
@@ -64,7 +80,7 @@ func createXml() {
 		}
 	}
 
-	file, err := os.Create("data/" + input + ".txt")
+	file, err := os.Create("data/" + input + ".xml")
 
 	if err != nil {
 		fmt.Print(err)
@@ -82,16 +98,22 @@ func writeXml() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	file, err := os.Create("data/" + input)
+	file, err := os.Create("data/" + input + ".xml")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	fmt.Print(Yellow("File was opened\nWrite text to input: "))
-	input, _ = reader.ReadString('\n')
+	fmt.Println("File was opened\nCreating User instance...")
+	fmt.Println(Yellow("Input first and last names:"))
+	firstName, _ := reader.ReadString('\n')
+	firstName = firstName[0:len(firstName)-2] + ""
+	lastName, _ := reader.ReadString('\n')
+	lastName = lastName[0:len(lastName)-2] + ""
 
-	_, err = file.WriteString(input)
+	person := NewPerson(firstName, lastName)
+	output, err := xml.MarshalIndent(person, "", "")
+	_, err = file.WriteString(string(output))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -106,7 +128,7 @@ func readXml() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	file, err := os.ReadFile("data/" + input)
+	file, err := os.ReadFile("data/" + input + ".xml")
 	if err != nil {
 		fmt.Print(Red(err))
 		return
@@ -122,7 +144,7 @@ func deleteXml() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	if err := os.Remove("data/" + input); err != nil {
+	if err := os.Remove("data/" + input + ".xml"); err != nil {
 		fmt.Print(Red(err))
 		return
 	}

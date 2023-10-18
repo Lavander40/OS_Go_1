@@ -24,7 +24,7 @@ func NewUser(firstName, lastName string) *User {
 			FirstName: firstName,
 			LastName:  lastName,
 		},
-		Age: 15,
+		Age: 21,
 	}
 }
 
@@ -81,7 +81,7 @@ func createJson() {
 	_, err := os.Stat("data/" + input + ".json")
 
 	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, rewrite? (print y)"))
+		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
 		answer, _ := reader.ReadString('\n')
 		answer = answer[0:len(answer)-2] + ""
 		if answer != "y" {

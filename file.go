@@ -53,10 +53,10 @@ func createFile() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	_, err := os.Stat(input)
+	_, err := os.Stat("data/" + input + ".txt")
 
 	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, rewrite? (print y)"))
+		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
 		answer, _ := reader.ReadString('\n')
 		answer = answer[0:len(answer)-2] + ""
 		if answer != "y" {
@@ -82,7 +82,7 @@ func writeFile() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	file, err := os.Create("data/" + input)
+	file, err := os.Create("data/" + input + ".txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -106,7 +106,7 @@ func readFile() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	file, err := os.ReadFile("data/" + input)
+	file, err := os.ReadFile("data/" + input + ".txt")
 	if err != nil {
 		fmt.Print(Red(err))
 		return
@@ -122,7 +122,7 @@ func deleteFile() {
 	input, _ := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 
-	if err := os.Remove("data/" + input); err != nil {
+	if err := os.Remove("data/" + input + ".txt"); err != nil {
 		fmt.Print(Red(err))
 		return
 	}

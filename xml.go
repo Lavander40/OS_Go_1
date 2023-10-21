@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/xml"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -72,7 +71,7 @@ func createXml() {
 	_, err := os.Stat("data/" + input + ".xml")
 
 	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
+		fmt.Println(Teal("File " + input + " already exist, rewrite? (print y)"))
 		answer, _ := reader.ReadString('\n')
 		answer = answer[0:len(answer)-2] + ""
 		if answer != "y" {
@@ -81,9 +80,8 @@ func createXml() {
 	}
 
 	file, err := os.Create("data/" + input + ".xml")
-
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print(Red("File creation error"))
 		return
 	}
 
@@ -100,7 +98,8 @@ func writeXml() {
 
 	file, err := os.Create("data/" + input + ".xml")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(Red("Creation error"))
+		return
 	}
 	defer file.Close()
 
@@ -112,10 +111,12 @@ func writeXml() {
 	lastName = lastName[0:len(lastName)-2] + ""
 
 	person := NewPerson(firstName, lastName)
-	output, err := xml.MarshalIndent(person, "", "")
-	_, err = file.WriteString(string(output))
+	output, err := xml.MarshalIndent(person, "", " ")
+	_, err = file.WriteString(xml.Header)
+	_, err = file.Write(output)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(Red("Writing error"))
+		return
 	}
 
 	fmt.Println(Green("Writing complete"))
@@ -130,7 +131,7 @@ func readXml() {
 
 	file, err := os.ReadFile("data/" + input + ".xml")
 	if err != nil {
-		fmt.Print(Red(err))
+		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
 		return
 	}
 
@@ -145,7 +146,7 @@ func deleteXml() {
 	input = input[0:len(input)-2] + ""
 
 	if err := os.Remove("data/" + input + ".xml"); err != nil {
-		fmt.Print(Red(err))
+		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
 		return
 	}
 

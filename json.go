@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -92,7 +91,7 @@ func createJson() {
 	file, err := os.Create("data/" + input + ".json")
 
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print(Red("Invalid input"))
 		return
 	}
 
@@ -109,7 +108,8 @@ func writeJson() {
 
 	file, err := os.Create("data/" + input + ".json")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
+		return
 	}
 	defer file.Close()
 
@@ -125,7 +125,8 @@ func writeJson() {
 
 	_, err = file.WriteString(string(content))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 
 	fmt.Println(Green("Writing complete"))
@@ -142,7 +143,7 @@ func readJson() {
 	file, err := os.ReadFile("data/" + input + ".json")
 	//err = json.Unmarshal(file, &user)
 	if err != nil {
-		fmt.Print(Red(err))
+		fmt.Printf(Red("File %s does not exist\n"), input+".json")
 		return
 	}
 
@@ -157,7 +158,7 @@ func deleteJson() {
 	input = input[0:len(input)-2] + ""
 
 	if err := os.Remove("data/" + input + ".json"); err != nil {
-		fmt.Print(Red(err))
+		fmt.Printf(Red("File %s does not exist\n"), input+".json")
 		return
 	}
 

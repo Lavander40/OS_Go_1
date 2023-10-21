@@ -13,7 +13,7 @@ import (
 
 func showZipMenu() {
 	fmt.Println(Yellow("1) Show menu options"))
-	fmt.Println(Yellow("2) Create zip"))
+	//fmt.Println(Yellow("2) Create zip"))
 	fmt.Println(Yellow("3) Write in zip"))
 	fmt.Println(Yellow("4) Read zip"))
 	fmt.Println(Yellow("5) Delete zip"))
@@ -31,8 +31,8 @@ func zipMenu() {
 		switch input {
 		case "1":
 			showZipMenu()
-		case "2":
-			createZip()
+		//case "2":
+		//	createZip()
 		case "3":
 			writeZip()
 		case "4":
@@ -71,7 +71,7 @@ func createZip() {
 	file, err := os.Create("data/" + input + ".zip")
 
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print(Red("Invalid input"))
 		return
 	}
 
@@ -90,23 +90,27 @@ func writeZip() {
 	input = input[0:len(input)-2] + ""
 	f, err := zipW.Create(input)
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 	file, err := os.ReadFile("data/" + input)
 	//fmt.Println(Teal(file))
 	_, err = f.Write([]byte(file))
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 	err = zipW.Close()
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 
 	// Запись данных в архив
 	err = ioutil.WriteFile("data/"+input+".zip", buff.Bytes(), os.ModePerm)
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 
 	fmt.Println(Green("File war archived"))
@@ -119,11 +123,13 @@ func readZip() {
 	input, err := reader.ReadString('\n')
 	input = input[0:len(input)-2] + ""
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 	zipR, err := zip.OpenReader("data/" + input + ".zip")
 	if err != nil {
-		panic(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 
 	for _, file := range zipR.File {
@@ -134,11 +140,13 @@ func readZip() {
 		}
 		_, err = io.Copy(os.Stdout, r)
 		if err != nil {
-			panic(err)
+			fmt.Print(Red("Invalid input"))
+			return
 		}
 		err = r.Close()
 		if err != nil {
-			panic(err)
+			fmt.Print(Red("Invalid input"))
+			return
 		}
 	}
 }

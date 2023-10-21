@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -47,27 +46,27 @@ func fileMenu() {
 }
 
 func createFile() {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	input := getFile()
 
 	_, err := os.Stat("data/" + input + ".txt")
 
 	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
-		answer, _ := reader.ReadString('\n')
-		answer = answer[0:len(answer)-2] + ""
-		if answer != "y" {
-			return
+		reader := bufio.NewReader(os.Stdin)
+
+		if _, err := os.Stat("/path/to/whatever"); err == nil {
+			fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
+			answer, _ := reader.ReadString('\n')
+			answer = answer[0:len(answer)-2] + ""
+			if answer != "y" {
+				return
+			}
 		}
 	}
 
 	file, err := os.Create("data/" + input + ".txt")
 
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print(Red("Creation error"))
 		return
 	}
 
@@ -84,7 +83,8 @@ func writeFile() {
 
 	file, err := os.Create("data/" + input + ".txt")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 	defer file.Close()
 
@@ -93,22 +93,19 @@ func writeFile() {
 
 	_, err = file.WriteString(input)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(Red("Invalid input"))
+		return
 	}
 
 	fmt.Println(Green("Writing complete"))
 }
 
 func readFile() {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	input := getFile()
 
 	file, err := os.ReadFile("data/" + input + ".txt")
 	if err != nil {
-		fmt.Print(Red(err))
+		fmt.Print(Red("Invalid input"))
 		return
 	}
 
@@ -116,14 +113,10 @@ func readFile() {
 }
 
 func deleteFile() {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	input := getFile()
 
 	if err := os.Remove("data/" + input + ".txt"); err != nil {
-		fmt.Print(Red(err))
+		fmt.Print(Red("Invalid input"))
 		return
 	}
 

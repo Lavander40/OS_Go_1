@@ -46,24 +46,14 @@ func fileMenu() {
 }
 
 func createFile() {
-	input := getFile()
+	input := "data/" + getFile() + ".txt"
 
-	_, err := os.Stat("data/" + input + ".txt")
-
-	if err == nil {
-		reader := bufio.NewReader(os.Stdin)
-
-		if _, err := os.Stat("/path/to/whatever"); err == nil {
-			fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
-			answer, _ := reader.ReadString('\n')
-			answer = answer[0:len(answer)-2] + ""
-			if answer != "y" {
-				return
-			}
-		}
+	if checkRewrite(input) == false {
+		fmt.Println(Red("aborting operation"))
+		return
 	}
 
-	file, err := os.Create("data/" + input + ".txt")
+	file, err := os.Create(input)
 
 	if err != nil {
 		fmt.Print(Red("Creation error"))
@@ -75,19 +65,21 @@ func createFile() {
 }
 
 func writeFile() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".txt"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
+	}
 
-	file, err := os.Create("data/" + input + ".txt")
+	file, err := os.Create(input)
 	if err != nil {
 		fmt.Print(Red("Invalid input"))
 		return
 	}
 	defer file.Close()
 
+	//reader := bufio.NewReader(os.Stdin)
 	fmt.Print(Yellow("File was opened\nWrite text to input: "))
 	input, _ = reader.ReadString('\n')
 
@@ -101,21 +93,21 @@ func writeFile() {
 }
 
 func readFile() {
-	input := getFile()
+	input := "data/" + getFile() + ".txt"
 
-	file, err := os.ReadFile("data/" + input + ".txt")
+	file, err := os.ReadFile(input)
 	if err != nil {
 		fmt.Print(Red("Invalid input"))
 		return
 	}
 
-	fmt.Println("File content:\n" + string(file))
+	fmt.Println(Yellow("File content:\n") + string(file))
 }
 
 func deleteFile() {
-	input := getFile()
+	input := "data/" + getFile() + ".txt"
 
-	if err := os.Remove("data/" + input + ".txt"); err != nil {
+	if err := os.Remove(input); err != nil {
 		fmt.Print(Red("Invalid input"))
 		return
 	}

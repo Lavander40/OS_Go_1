@@ -51,24 +51,14 @@ func zipMenu() {
 }
 
 func createZip() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".zip"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	_, err := os.Stat("data/" + input + ".zip")
-
-	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
-		answer, _ := reader.ReadString('\n')
-		answer = answer[0:len(answer)-2] + ""
-		if answer != "y" {
-			return
-		}
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
 	}
 
-	file, err := os.Create("data/" + input + ".zip")
+	file, err := os.Create(input)
 
 	if err != nil {
 		fmt.Print(Red("Invalid input"))
@@ -117,23 +107,16 @@ func writeZip() {
 }
 
 func readZip() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".zip"
 
-	fmt.Print("Choose archive to read: ")
-	input, err := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-	if err != nil {
-		fmt.Print(Red("Invalid input"))
-		return
-	}
-	zipR, err := zip.OpenReader("data/" + input + ".zip")
+	zipR, err := zip.OpenReader(input)
 	if err != nil {
 		fmt.Print(Red("Invalid input"))
 		return
 	}
 
 	for _, file := range zipR.File {
-		fmt.Println(Yellow("Файл " + file.Name + " содержит следующее:"))
+		fmt.Println(Yellow("Файл " + file.Name + ".zip содержит следующее:"))
 		r, err := file.Open()
 		if err != nil {
 			log.Fatal(err)
@@ -152,13 +135,9 @@ func readZip() {
 }
 
 func deleteZip() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".zip"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	if err := os.Remove("data/" + input + ".zip"); err != nil {
+	if err := os.Remove(input); err != nil {
 		fmt.Print(Red(err))
 		return
 	}

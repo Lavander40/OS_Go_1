@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 )
 
 func getFile() string {
-	reader := bufio.NewReader(os.Stdin)
+	//reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Choose file name: ")
 	fileName, _ := reader.ReadString('\n')
@@ -16,13 +15,22 @@ func getFile() string {
 	return fileName
 }
 
-func exists() bool {
-	if _, err := os.Stat("/path/to/whatever"); err == nil {
+func exists(file string) bool {
+	if _, err := os.Stat(file); err == nil {
 		return true
 	}
 	return false
 }
 
-func rewrite() {
-
+func checkRewrite(file string) bool {
+	if exists(file) {
+		//reader := bufio.NewReader(os.Stdin)
+		fmt.Println(Teal("File " + file + " already exist, recreate? (print y)"))
+		answer, _ := reader.ReadString('\n')
+		answer = answer[0:len(answer)-2] + ""
+		if answer != "y" {
+			return false
+		}
+	}
+	return true
 }

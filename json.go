@@ -71,24 +71,16 @@ func jsonMenu() {
 }
 
 func createJson() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".json"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	_, err := os.Stat(input)
 
-	_, err := os.Stat("data/" + input + ".json")
-
-	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, recreate? (print y)"))
-		answer, _ := reader.ReadString('\n')
-		answer = answer[0:len(answer)-2] + ""
-		if answer != "y" {
-			return
-		}
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
 	}
 
-	file, err := os.Create("data/" + input + ".json")
+	file, err := os.Create(input)
 
 	if err != nil {
 		fmt.Print(Red("Invalid input"))
@@ -100,19 +92,21 @@ func createJson() {
 }
 
 func writeJson() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".json"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
+	}
 
-	file, err := os.Create("data/" + input + ".json")
+	file, err := os.Create(input)
 	if err != nil {
-		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
+		fmt.Printf(Red("File %s does not exist\n"), input)
 		return
 	}
 	defer file.Close()
 
+	//reader := bufio.NewReader(os.Stdin)
 	fmt.Println("File was opened\nCreating User instance...")
 	fmt.Println(Yellow("Input first and last names:"))
 	firstName, _ := reader.ReadString('\n')
@@ -133,32 +127,22 @@ func writeJson() {
 }
 
 func readJson() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".json"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	//user := User{}
-	file, err := os.ReadFile("data/" + input + ".json")
-	//err = json.Unmarshal(file, &user)
+	file, err := os.ReadFile(input)
 	if err != nil {
-		fmt.Printf(Red("File %s does not exist\n"), input+".json")
+		fmt.Printf(Red("File %s does not exist\n"), input)
 		return
 	}
 
-	fmt.Println("File content:\n" + string(file)) //+ user.Serialize())
+	fmt.Println("File content:\n" + string(file))
 }
 
 func deleteJson() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".json"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	if err := os.Remove("data/" + input + ".json"); err != nil {
-		fmt.Printf(Red("File %s does not exist\n"), input+".json")
+	if err := os.Remove(input); err != nil {
+		fmt.Printf(Red("File %s does not exist\n"), input)
 		return
 	}
 

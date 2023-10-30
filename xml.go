@@ -62,24 +62,14 @@ func xmlMenu() {
 }
 
 func createXml() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".xml"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	_, err := os.Stat("data/" + input + ".xml")
-
-	if err == nil {
-		fmt.Println(Teal("File " + input + " already exist, rewrite? (print y)"))
-		answer, _ := reader.ReadString('\n')
-		answer = answer[0:len(answer)-2] + ""
-		if answer != "y" {
-			return
-		}
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
 	}
 
-	file, err := os.Create("data/" + input + ".xml")
+	file, err := os.Create(input)
 	if err != nil {
 		fmt.Print(Red("File creation error"))
 		return
@@ -90,13 +80,14 @@ func createXml() {
 }
 
 func writeXml() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".xml"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
+	if checkRewrite(input) == false {
+		fmt.Println(Yellow("aborting operation"))
+		return
+	}
 
-	file, err := os.Create("data/" + input + ".xml")
+	file, err := os.Create(input)
 	if err != nil {
 		fmt.Print(Red("Creation error"))
 		return
@@ -123,15 +114,11 @@ func writeXml() {
 }
 
 func readXml() {
-	reader := bufio.NewReader(os.Stdin)
+	input := "data/" + getFile() + ".xml"
 
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	file, err := os.ReadFile("data/" + input + ".xml")
+	file, err := os.ReadFile(input)
 	if err != nil {
-		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
+		fmt.Printf(Red("File %s does not exist\n"), input)
 		return
 	}
 
@@ -139,14 +126,9 @@ func readXml() {
 }
 
 func deleteXml() {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Choose file name: ")
-	input, _ := reader.ReadString('\n')
-	input = input[0:len(input)-2] + ""
-
-	if err := os.Remove("data/" + input + ".xml"); err != nil {
-		fmt.Printf(Red("File %s does not exist\n"), input+".xml")
+	input := "data/" + getFile() + ".xml"
+	if err := os.Remove(input); err != nil {
+		fmt.Printf(Red("File %s does not exist\n"), input)
 		return
 	}
 

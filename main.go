@@ -10,6 +10,7 @@ import (
 )
 
 var OS = runtime.GOOS
+var reader = bufio.NewReader(os.Stdin)
 
 func showMenu() {
 	fmt.Println(Yellow("1) Show menu options"))
@@ -73,14 +74,4 @@ func logicDisks() {
 	for i, val := range r {
 		fmt.Println("Disk " + strconv.Itoa(i) + " : " + Yellow(val))
 	}
-}
-
-func testExec() {
-	//go:generate echo systeminfo
-	//cmd := exec.Command("systeminfo")
-	//stdout, err := cmd.Output()
-	//if err != nil {
-	//	fmt.Print(err)
-	//}
-	//fmt.Println(string(stdout))
 }
